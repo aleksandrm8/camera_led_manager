@@ -78,12 +78,14 @@ function rate_decrease {
   fi
 }
 
+    echo -n "$(tput setab ${BG} tput setaf ${FG})"
+
 function menu_root {
   tput civis
 
 	while true; do
 
-    echo -n "$(tput setab ${BG} tput setaf ${FG})"
+
     tput clear
      
     # Set a foreground colour using ANSI escape
@@ -188,7 +190,7 @@ mkfifo ${fifo_name}_resp
 if [[ ! -f ${CL_FIFO_NAME} ]]
 then
   echo "Can not connec to server"
-  exit 1
+#  exit 1
 fi
 
 menu_root;
