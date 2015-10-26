@@ -38,6 +38,14 @@ public:
 private:
 	int m_fd;
 };
+void DelTrailingNewLines(std::string &str)
+{
+	while (str.size()
+				 && str.at(str.size() - 1) == '\n')
+	{
+		str = str.substr(0, str.size() - 1);
+	}
+}
 
 void ClientsManager::ThreadFun()
 {
@@ -60,7 +68,7 @@ void ClientsManager::ThreadFun()
 	  FD_SET(file, &set);
 
 		int err = 0;
-		err = select(file+1, &set, NULL, NULL, &timeout);
+		err = select(file + 1, &set, NULL, NULL, &timeout);
 		if (err == -1)
 		{
 			std::cerr << "select file error: "
@@ -76,18 +84,47 @@ void ClientsManager::ThreadFun()
 					+ std::string(strerror(errno)) );
 			}
 			std::string command(read_buf, cmd_lenght);
+			DelTrailingNewLines(command);
 		
 			if (!command.compare(0,
 													 kAddClientCommand.size(),
 													 kAddClientCommand))
 			{
-				std::cout << "add client command" << std::endl;
+				const std::string id =
+					command.substr(kAddClientCommand.size(),
+													command.size());
+				if (m_clients.find(id) != m_clients.end())
+				{
+					std::cerr << "client" << id
+										<< "already exist"
+										<< std::endl;
+				}
+				else
+				{
+					m_clients.insert(std::make_pair(id, Client()));
+					std::cout << "client " << id << " added"
+						<< std::endl;
+				}
 			}
 			else if (!command.compare(0,
 																kDelClientCommand.size(),
 																kDelClientCommand))
 			{
-				std::cout << "del client command" << std::endl;
+				const std::string id =
+					command.substr(kDelClientCommand.size(),
+													command.size());
+				if (m_clients.find(id) != m_clients.end())
+				{
+					m_clients.erase(id);
+					std::cout << "client " << id << " deleted"
+						<< std::endl;
+				}
+				else
+				{
+					std::cerr << "client" << id
+										<< " not found"
+										<< std::endl;
+				}
 			}
 			else
 			{
@@ -97,6 +134,7 @@ void ClientsManager::ThreadFun()
 		}
 		else
 		{
+			// timed out
 		}
 	}
 
