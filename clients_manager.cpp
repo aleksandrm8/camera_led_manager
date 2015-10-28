@@ -9,6 +9,8 @@ ClientsManager::ClientsManager():
 		throw std::runtime_error("Can not create user management fifo.");
 #ifdef __CYGWIN__
 	system("chmod.exe 777 " CLIENT_FIFO_NAME);
+#else
+	system("chmod +rw " CLIENT_FIFO_NAME);
 #endif
 	m_cl = std::make_shared<std::thread>(&ClientsManager::ThreadFun, this);
 }
@@ -101,7 +103,7 @@ void ClientsManager::ThreadFun()
 				}
 				else
 				{
-					m_clients.insert(std::make_pair(id, Client()));
+          m_clients.insert(std::make_pair(id, std::make_shared<Client>(id)));
 					std::cout << "client " << id << " added"
 						<< std::endl;
 				}
