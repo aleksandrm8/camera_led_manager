@@ -9,6 +9,7 @@ namespace ff_tools
   };
 
   static const int kMaxCmdLenght = 512;
+  static const int kOpeningOutputFifoPeriodMcs = 10000;
 
   Res ReadFromFifo(std::string name, std::string &res, size_t timeout);
   Res WriteToFifo(std::string name, std::string cmd, size_t timeout);

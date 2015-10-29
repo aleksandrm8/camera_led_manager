@@ -98,7 +98,7 @@ Res WriteToFifo(std::string name, std::string cmd, size_t timeout_)
     fd = open(name.c_str(), O_WRONLY | O_NONBLOCK);
     if (-1 == fd && ENXIO == errno)
     {
-      size_t retry_timeout = 100000;
+      size_t retry_timeout = kOpeningOutputFifoPeriodMcs;
       std::this_thread::sleep_for(std::chrono::microseconds(retry_timeout));
       if (retry_timeout > timeout_)
       {

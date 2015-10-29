@@ -125,7 +125,6 @@ function check_trailing_new_line () {
 
 #polling function
 function poll {
-  
   echo "get-led-state" > ${INPUT_FIFO}
   ans=`cat ${OUTPUT_FIFO}`
   #check_trailing_new_line $ans
@@ -175,20 +174,23 @@ function poll {
 
 
 function repaint {
+echo -e "repaint" >> log
     echo -n "$(tput setab ${BG} tput setaf ${FG})"
     tput clear
+    #sleep 1
      
     # Set a foreground colour using ANSI escape
     tput setaf 6
     tput cup 13 15
-    echo "j,k: select item"
+    echo "↑,↓: select item"
     tput cup 14 15
-    echo "h,l: change value"
+    echo "←,→: change value"
     tput cup 15 15
     echo "q: quit"
     tput sgr0
      
     tput setaf 3
+    tput setab ${BG}
     tput cup 5 17
     # Set reverse video mode
     echo "CAMERA LED MANAGEMENT"
@@ -196,6 +198,8 @@ function repaint {
      
     # item 1
     tput cup 7 15
+    tput setab ${BG}
+    tput setaf 7
     if [[ ${CUR_ITEM} == "1" ]]
       then tput rev
     fi
@@ -203,6 +207,8 @@ function repaint {
     tput sgr0
      
     tput cup 8 15
+    tput setab ${BG}
+    tput setaf 7
     if [[ ${CUR_ITEM} == "2" ]]
       then tput rev
     fi
@@ -210,6 +216,8 @@ function repaint {
     tput sgr0
      
     tput cup 9 15
+    tput setab ${BG}
+    tput setaf 7
     if [[ ${CUR_ITEM} == "3" ]]
       then tput rev
     fi
@@ -235,23 +243,36 @@ function menu_root {
     LED_COLOR_BACKUP=$LED_COLOR
     LED_RATE_BACKUP=$LED_RATE
      
-    read -t 1 -n 1 KEY
+    read -sn1 -t 1 KEY
+    read -sn1 -t 0.0001 KEY2
+    read -sn1 -t 0.0001 KEY3
+		case $KEY in
+			[q]* )
+        tput clear
+        tput sgr0
+        tput rc
+        echo "delete client ${CLIENT_ID}" > ${CL_FIFO_NAME}
+        break;;
+			* )
+      ;;
+		esac
+
     poll
 
-		case $KEY in
-			[k]* )
+		case $KEY3 in
+			A)
         if [[ ${CUR_ITEM} > 1 ]]
         then
           CUR_ITEM=$((${CUR_ITEM}-1))
         fi
         ;;
-			[j]* )
+			B)
         if [[ ${CUR_ITEM} < ${ITEMS_COUNT} ]]
         then
           CUR_ITEM=$((${CUR_ITEM}+1))
         fi
 				;;
-			[l]* )
+			C)
         case ${CUR_ITEM} in
           [1]* )
             state_increase;
@@ -265,7 +286,7 @@ function menu_root {
           * )
         esac
 				;;
-			[h]* )
+			D)
         case ${CUR_ITEM} in
           [1]* )
             state_decrease;
@@ -288,8 +309,6 @@ function menu_root {
 			* )
       ;;
 		esac
-
-
 	done
 }
 
@@ -300,16 +319,19 @@ then
   echo "Can not connec to server"
   exit 1
 fi
-echo "start write"
 echo "add client ${CLIENT_ID}" > ${CL_FIFO_NAME}
-echo "stop write"
-sleep 1
+sleep 0.2
 if [[ ! -p ${INPUT_FIFO} ]] || [[ ! -p ${OUTPUT_FIFO} ]]
 then
   echo "Can not register new client"
   exit 1
 fi
 
+#echo off
+stty_orig=`stty -g`
+stty -echo
+echo 'hidden section'
+stty $stty_orig
 
 repaint;
 poll
