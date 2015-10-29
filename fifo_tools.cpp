@@ -95,7 +95,7 @@ Res WriteToFifo(std::string name, std::string cmd, size_t timeout_)
   int fd = -1;
   while (1)
   {
-    fd = open(name.c_str(), O_WRONLY);
+    fd = open(name.c_str(), O_WRONLY | O_NONBLOCK);
     if (-1 == fd && ENXIO == errno)
     {
       size_t retry_timeout = 100000;
@@ -103,7 +103,7 @@ Res WriteToFifo(std::string name, std::string cmd, size_t timeout_)
       if (retry_timeout > timeout_)
       {
         timeout_ = 0;
-        break;
+        return Res::NOBODY_READ_FIFO;
       }
       else
       {

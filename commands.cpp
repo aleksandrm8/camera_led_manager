@@ -9,7 +9,6 @@ std::string SetLedState::Run(Server *srv, std::string arg)
     throw std::runtime_error("SetLedState::Run - wrong input param");
   if (!arg.compare(ArgsToStr.at(Args::on)))
   {
-    std::cout << "turning on LED" << std::endl;
     srv->SetState(true);
   }
   else if (!arg.compare(ArgsToStr.at(Args::off)))
@@ -18,9 +17,7 @@ std::string SetLedState::Run(Server *srv, std::string arg)
   }
   else
   {
-    throw std::runtime_error("Wrong argument "
-         + arg + " for command " 
-        + PrefixesToStr.at(m_prefix));
+    throw std::runtime_error("Wrong argument " + arg);
   }
   return "OK\n";
 }
@@ -52,9 +49,17 @@ std::string SetLedColor::Run(Server *srv, std::string arg)
   }
   else
   {
-    throw std::runtime_error("Wrong argument "
-         + arg + " for command " 
-        + PrefixesToStr.at(m_prefix));
+    std::stringstream ss;
+    ss << "Wrong argument "
+      << arg << ". "
+      << "Supported arguments for this command: ";
+    for (auto iter: ArgsToStr)
+    {
+      ss << iter.second;
+      if (iter != *ArgsToStr.rbegin())
+        ss << ", ";
+    }
+    throw std::runtime_error(ss.str());
   }
   return "OK\n";
 }
@@ -64,26 +69,7 @@ std::string GetLedColor::Run(Server *srv, std::string arg)
   if (!srv)
     throw std::runtime_error("GetLedColor::Run - wrong input param");
 
-  if (!srv)
-    throw std::runtime_error("SetLedColor::Run - wrong input param");
-  if (!std::string(srv->GetColor()).compare(ArgsToStr.at(Args::red)))
-  {
-    return "OK " + std::string(srv->GetColor()) + '\n';
-  }
-  else if (!std::string(srv->GetColor()).compare(ArgsToStr.at(Args::green)))
-  {
-    return "OK " + std::string(srv->GetColor()) + '\n';
-  }
-  else if (!std::string(srv->GetColor()).compare(ArgsToStr.at(Args::blue)))
-  {
-    return "OK " + std::string(srv->GetColor()) + '\n';
-  }
-  else
-  {
-    throw std::runtime_error("Wrong argument "
-         + arg + " for command " 
-        + PrefixesToStr.at(m_prefix));
-  }
+  return "OK " + std::string(srv->GetColor()) + '\n';
 }
 
 inline std::string RmTrZr(std::string str)

@@ -20,6 +20,9 @@ int main()
 		std::shared_ptr<std::atomic_bool> stop_flag =
 			std::make_shared<std::atomic_bool>(false);
 		ClientsManager clients_manager;
+    std::cout << "Camera LED manager server started. "
+      "Press q<enter> for quit."
+      << std::endl;
 		while (1)
 		{
 			std::string str;

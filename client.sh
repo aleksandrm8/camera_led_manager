@@ -28,16 +28,15 @@ function state_action () {
 function state_increase {
   if [[ ${LED_STATE} == "on" ]]
   then
-    #LED_STATE="off"
+    LED_STATE="off"
     state_action "off";
+  else
+    LED_STATE="on"
+    state_action "on";
   fi
 }
 function state_decrease {
-  if [[ ${LED_STATE} == "off" ]]
-  then
-    #LED_STATE="on"
-    state_action "on";
-  fi
+  state_increase;
 }
 #LED color
 LED_COLOR="red"
@@ -57,6 +56,8 @@ function color_increase {
       color_action;
       ;;
     [blue]* )
+      LED_COLOR="red"
+      color_action;
       ;;
     * )
       echo "Wrong color ${LED_COLOR}"
@@ -66,6 +67,8 @@ function color_increase {
 function color_decrease {
   case ${LED_COLOR} in
     [red]* )
+      LED_COLOR="blue"
+      color_action;
       ;;
     [green]* )
       LED_COLOR="red"
@@ -169,9 +172,10 @@ function poll {
 }
 
 
-    echo -n "$(tput setab ${BG} tput setaf ${FG})"
+
 
 function repaint {
+    echo -n "$(tput setab ${BG} tput setaf ${FG})"
     tput clear
      
     # Set a foreground colour using ANSI escape
@@ -306,8 +310,9 @@ then
   exit 1
 fi
 
-poll
 
+repaint;
+poll
 menu_root;
 #while true; do
 #  sleep 1
