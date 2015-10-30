@@ -45,7 +45,7 @@ public:
   BaseCmd(Prefixes prefix_id): m_prefix(prefix_id)
   {}
   virtual ~BaseCmd() {}
-  virtual std::string Run(Server *srv, std::string) = 0;
+  virtual std::string Run(Server &srv, std::string) = 0;
 protected:
   Prefixes m_prefix;
 };
@@ -80,7 +80,7 @@ public:
   SetLedState(Prefixes prefix_id):
     LedState(prefix_id)
   {}
-  std::string Run(Server *srv, std::string arg) override;
+  std::string Run(Server &srv, std::string arg) override;
 };
 
 class GetLedState: public LedState
@@ -89,7 +89,7 @@ public:
   GetLedState(Prefixes prefix_id):
     LedState(prefix_id)
   {}
-  std::string Run(Server *srv, std::string arg) override;
+  std::string Run(Server &srv, std::string arg) override;
 };
 
 class LedColor: public BaseCmd
@@ -125,7 +125,7 @@ public:
   SetLedColor(Prefixes prefix_id):
     LedColor(prefix_id)
   {}
-  std::string Run(Server *srv, std::string arg) override;
+  std::string Run(Server &srv, std::string arg) override;
 };
 
 class GetLedColor: public LedColor
@@ -134,7 +134,7 @@ public:
   GetLedColor(Prefixes prefix_id):
     LedColor(prefix_id)
   {}
-  std::string Run(Server *srv, std::string arg) override;
+  std::string Run(Server &srv, std::string arg) override;
 };
 
 class SetLedRate: public BaseCmd
@@ -143,7 +143,7 @@ public:
   SetLedRate(Prefixes prefix_id):
     BaseCmd(prefix_id)
   {}
-  std::string Run(Server *srv, std::string arg) override;
+  std::string Run(Server &srv, std::string arg) override;
 protected:
 };
 
@@ -153,7 +153,7 @@ public:
   GetLedRate(Prefixes prefix_id):
     BaseCmd(prefix_id)
   {}
-  std::string Run(Server *srv, std::string arg) override;
+  std::string Run(Server &srv, std::string arg) override;
 protected:
 };
 

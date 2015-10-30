@@ -70,10 +70,9 @@ private:
 class Server
 {
 public:
-  static Server* Instance()
+  static Server& Instance()
   {
-    static Server *server =
-      new Server(false, Color(Color::Colors::BLUE), 0);
+    static Server server(false, Color(Color::Colors::BLUE), 0);
     return server;
   }
   bool GetState()
